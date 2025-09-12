@@ -8,20 +8,32 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<User?> signInWithEmail(String email, String password) async {
-    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return userCredential.user;
+    try {
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print('Login exitoso para: $email');
+      return userCredential.user;
+    } catch (e) {
+      print('Error en signInWithEmail: $e');
+      rethrow;
+    }
   }
 
   @override
   Future<User?> signUpWithEmail(String email, String password) async {
-    final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return userCredential.user;
+    try {
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print('Registro exitoso para: $email');
+      return userCredential.user;
+    } catch (e) {
+      print('Error en signUpWithEmail: $e');
+      rethrow;
+    }
   }
 
   @override

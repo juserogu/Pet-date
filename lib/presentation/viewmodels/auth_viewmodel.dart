@@ -13,13 +13,23 @@ class AuthViewModel with ChangeNotifier {
   User? get user => _user;
 
   Future<void> signIn(String email, String password) async {
-    _user = await authRepository.signInWithEmail(email, password);
-    notifyListeners();
+    try {
+      _user = await authRepository.signInWithEmail(email, password);
+      notifyListeners();
+    } catch (e) {
+      print('Error en signIn: $e');
+      rethrow;
+    }
   }
 
   Future<void> signUp(String email, String password) async {
-    _user = await authRepository.signUpWithEmail(email, password);
-    notifyListeners();
+    try {
+      _user = await authRepository.signUpWithEmail(email, password);
+      notifyListeners();
+    } catch (e) {
+      print('Error en signUp: $e');
+      rethrow;
+    }
   }
 
   Future<void> signOut() async {
