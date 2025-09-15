@@ -8,27 +8,40 @@ class AuthViewModel with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AuthViewModel({required this.authRepository});
-
+  bool _isLoading = false;
   User? _user;
   User? get user => _user;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    if (_isLoading == value) return;
+    _isLoading = value;
+    notifyListeners();
+  }
 
   Future<void> signIn(String email, String password) async {
+    _setLoading(true);
     try {
       _user = await authRepository.signInWithEmail(email, password);
       notifyListeners();
     } catch (e) {
       print('Error en signIn: $e');
       rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 
   Future<void> signUp(String email, String password) async {
+    _setLoading(true);
     try {
       _user = await authRepository.signUpWithEmail(email, password);
       notifyListeners();
     } catch (e) {
       print('Error en signUp: $e');
       rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 
