@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_date/data/repositories/auth_repository.dart';
+import 'package:pet_date/domain/entities/auth_user.dart';
+import 'package:pet_date/domain/repositories/auth_repository.dart';
 
 class AuthViewModel with ChangeNotifier {
   final AuthRepository authRepository;
@@ -9,8 +10,8 @@ class AuthViewModel with ChangeNotifier {
 
   AuthViewModel({required this.authRepository});
   bool _isLoading = false;
-  User? _user;
-  User? get user => _user;
+  AuthUser? _user;
+  AuthUser? get user => _user;
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
@@ -25,7 +26,7 @@ class AuthViewModel with ChangeNotifier {
       _user = await authRepository.signInWithEmail(email, password);
       notifyListeners();
     } catch (e) {
-      print('Error en signIn: $e');
+      debugPrint('Error en signIn: $e');
       rethrow;
     } finally {
       _setLoading(false);
@@ -38,7 +39,7 @@ class AuthViewModel with ChangeNotifier {
       _user = await authRepository.signUpWithEmail(email, password);
       notifyListeners();
     } catch (e) {
-      print('Error en signUp: $e');
+      debugPrint('Error en signUp: $e');
       rethrow;
     } finally {
       _setLoading(false);
@@ -57,9 +58,24 @@ class AuthViewModel with ChangeNotifier {
   }
 
   Future<void> addUserToFirestore(String name) async {
-    if (_user != null) {
-      await _firestore.collection('users').doc(_user!.uid).set(
-        {'email': _user!.email, 'uid': _user!.uid, 'name': name},
+    final current = _user;
+    if (current != null) {
+      await _firestore.collection('users').doc(current.id).set(
+        {
+          'id': current.id,
+          'uid': current.id,
+          'email': current.email,
+          'name': name,
+          // Campos básicos para la UI (con valores por defecto)
+          'age': 'Not specified',
+          'bio': '',
+          'petName': 'Pet',
+          'petType': 'Animal',
+          'photoUrl': '',
+          'photoUrls': <String>[],
+          'matchesLastSeen': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
       );
     }
     notifyListeners();

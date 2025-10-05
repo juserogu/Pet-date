@@ -7,14 +7,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthProvider extends StatelessWidget {
   final Widget child;
 
-  AuthProvider({required this.child});
+  const AuthProvider({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AuthViewModel(
         authRepository: FirebaseAuthRepository(FirebaseAuth.instance),
-      ),
+      )..loadCurrentUser(),
       child: child,
     );
   }

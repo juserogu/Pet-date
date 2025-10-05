@@ -7,12 +7,14 @@ import 'package:provider/provider.dart';
 import '../viewmodels/user_viewmodel.dart';
 
 class UserProvider extends StatelessWidget {
+  const UserProvider({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => UserViewModel(
           userRepository: FirebaseUserRepository(FirebaseFirestore.instance)),
-      child: MyApp(),
+      child: const MyApp(),
     );
   }
 }

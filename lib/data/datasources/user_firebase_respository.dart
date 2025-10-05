@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pet_date/data/models/user_model.dart';
-import 'package:pet_date/data/repositories/user_repository.dart';
-import 'package:pet_date/domain/entities/user_pet.dart';
+import 'package:pet_date/data/mappers/user_profile_mapper.dart';
+import 'package:pet_date/domain/entities/user_profile.dart';
+import 'package:pet_date/domain/repositories/user_repository.dart';
 
 class FirebaseUserRepository implements UserRepository {
   final FirebaseFirestore firestore;
@@ -9,16 +9,37 @@ class FirebaseUserRepository implements UserRepository {
   FirebaseUserRepository(this.firestore);
 
   @override
-  Future<UserPet> getUser(String id) async {
+  Future<UserProfile> getUser(String id) async {
     final doc = await firestore.collection('users').doc(id).get();
-    return UserModel.fromJson(doc.data()!);
+    final data = doc.data();
+    if (data == null) {
+      throw StateError('User not found');
+    }
+    return UserProfileMapper.fromFirestore(doc.id, data);
   }
 
   @override
-  Future<void> addUser(UserPet user) async {
+  @override
+  Future<void> addUser(UserProfile user) async {
+    await firestore.collection('users').doc(user.id).set({
+      'id': user.id,
+      'uid': user.id,
+      'name': user.name,
+      'email': '',
+      'age': user.age,
+      'bio': user.bio,
+      'petName': user.petName,
+      'petType': user.petType,
+      'photoUrls': user.photoUrls,
+      'photoUrl': user.primaryPhotoUrl,
+    }, SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> updateUser(String id, Map<String, dynamic> data) async {
     await firestore
         .collection('users')
-        .doc(user.id)
-        .set((user as UserModel).toJson());
+        .doc(id)
+        .set(data, SetOptions(merge: true));
   }
 }

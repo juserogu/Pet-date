@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pet_date/domain/entities/user_profile.dart';
 
 class UserCard extends StatelessWidget {
-  final DocumentSnapshot user;
+  final UserProfile user;
   final VoidCallback? onLike;
   final VoidCallback? onDislike;
 
   const UserCard({
-    Key? key,
+    super.key,
     required this.user,
     this.onLike,
     this.onDislike,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final userData = user.data() as Map<String, dynamic>;
-    final name = userData['name'] ?? 'User';
-    final age = userData['age'] ?? 'Not specified';
-    final bio = userData['bio'] ?? 'No description';
-    final petName = userData['petName'] ?? 'Pet';
-    final petType = userData['petType'] ?? 'Animal';
+    final name = user.name;
+    final age = user.age;
+    final bio = user.bio;
+    final petName = user.petName;
+    final petType = user.petType;
+    final photoUrl = user.primaryPhotoUrl;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
             blurRadius: 15,
-            offset: Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -52,6 +52,12 @@ class UserCard extends StatelessWidget {
                     Colors.blue.shade400,
                   ],
                 ),
+                image: photoUrl.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(photoUrl),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
               child: Stack(
                 children: [
@@ -81,41 +87,42 @@ class UserCard extends StatelessWidget {
                     ),
                   ),
                   // Icono principal
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.2),
+                  if (photoUrl.isEmpty)
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            child: Icon(
+                              Icons.pets,
+                              size: 80,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
                           ),
-                          child: Icon(
-                            Icons.pets,
-                            size: 80,
-                            color: Colors.white.withOpacity(0.8),
+                          const SizedBox(height: 20),
+                          Text(
+                            petName,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          petName,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                          Text(
+                            petType,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        Text(
-                          petType,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -136,7 +143,7 @@ class UserCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -149,14 +156,14 @@ class UserCard extends StatelessWidget {
                             children: [
                               Text(
                                 name,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.5,
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 'Owner of $petName',
                                 style: TextStyle(
@@ -169,8 +176,8 @@ class UserCard extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.25),
                             borderRadius: BorderRadius.circular(25),
@@ -181,7 +188,7 @@ class UserCard extends StatelessWidget {
                           ),
                           child: Text(
                             age,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -190,10 +197,10 @@ class UserCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.pinkAccent.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(15),
@@ -204,14 +211,14 @@ class UserCard extends StatelessWidget {
                       ),
                       child: Text(
                         petType,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
                       bio,
                       style: TextStyle(
@@ -233,12 +240,13 @@ class UserCard extends StatelessWidget {
               top: 20,
               right: 20,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
